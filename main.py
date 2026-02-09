@@ -50,9 +50,9 @@ def convert_currency(amount: float, from_currency: str, to_currency: str):
         "currency": to_currency
     }
 
-#------------------
-# Tool Schemas
-# ------------------
+# #------------------
+# # Tool Schemas
+# # ------------------
 tools = [
     {
         "type": "function",
@@ -111,48 +111,48 @@ prompt = (
     "and the total cost of logistics for this conference if I'm staying for three days."
 )
 
-# Step 1: Initial LLM call
-response = client.chat.completions.create(
-    model=LLM_MODEL_NAME,
-    messages=[{"role": "user", "content": prompt}],
-    tools=tools,
-    tool_choice="auto"
-)
+messages = [{"role": "user", "content": prompt}]
 
-message = response.choices[0].message
-
-# Step 2: Handle tool calls
-tool_results = []
-if message.tool_calls:
-    for tool_call in message.tool_calls:
-        name = tool_call.function.name
-        args = json.loads(tool_call.function.arguments)
-
+# Tool calls
+def execute_tool(name, args):
         if name == "get_flight_schedule":
-            result = get_flight_schedule(**args)
+            return get_flight_schedule(**args)
         elif name == "get_hotel_schedule":
-            result = get_hotel_schedule(**args)
+            return get_hotel_schedule(**args)
         elif name == "convert_currency":
-            result = convert_currency(**args)
+            return convert_currency(**args)
         else:
-            result = None
+            return {"error": "Unknown tool"}
 
-        tool_results.append({
-            "role": "tool",
-            "tool_call_id": tool_call.id,
-            "name": name,
-            "content": json.dumps(result)
-        })
+# ------------------
+#  LLM Loop
+# ------------------
+while True:
+    response = client.chat.completions.create(
+        model=LLM_MODEL_NAME,
+        messages=messages,
+        tools=tools,
+        tool_choice="auto"
+    )
 
-# Step 3: Send tool results back to LLM
-final_response = client.chat.completions.create(
-    model=LLM_MODEL_NAME,
-    messages=[
-        {"role": "user", "content": prompt},
-        message,
-        *tool_results
-    ]
-)
+    message = response.choices[0].message
 
-# Step 4: Print final response to stdout
-print(final_response.choices[0].message.content)
+    if message.tool_calls:
+        messages.append(message)
+
+        for tool_call in message.tool_calls:
+            tool_name = tool_call.function.name
+            tool_args = json.loads(tool_call.function.arguments)
+
+            tool_result = execute_tool(tool_name, tool_args)
+
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "name": tool_name,
+                "content": json.dumps(tool_result)
+            })
+
+    else:
+        print(message.content)
+        break

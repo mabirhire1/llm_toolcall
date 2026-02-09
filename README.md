@@ -89,28 +89,25 @@ The system automatically sends the following prompt to the LLM:
 ## Example Output
 
 ```text
-For your flight from Lagos to Nairobi, the total flight time one way is approximately **5.5 hours**. Therefore, for a round trip, the total flight time would be **11 hours**.
+Your flight from Lagos to Nairobi takes approximately **5.5 hours**. 
 
-Regarding logistics for your three-day stay at the conference in Nairobi, here are some accommodation options:
+The estimated round-trip flight cost is **$920**.
 
-1. **Nairobi Serena Hotel**: $250 per night
+For your stay in Nairobi, here are some hotel options for three nights:
+
+1. **Nairobi Serena**: $250 per night
+   - Total for 3 nights: $750
 2. **Radisson Blu**: $200 per night
+   - Total for 3 nights: $600
 
-Calculating the total cost for a three-night stay:
-- **Nairobi Serena**: 3 nights x $250 = $750
-- **Radisson Blu**: 3 nights x $200 = $600
+### Total Cost of Logistics:
+- **Flight**: $920
+- **Hotel (Nairobi Serena)**: $750
+- **Total**: $1,670
+- **Hotel (Radisson Blu)**: $600
+- **Total**: $1,520
 
-### Summary of Costs:
-- **Flight Cost**: $920 (round trip)
-- **Hotel Cost**:
-  - Nairobi Serena: $750
-  - Radisson Blu: $600
-
-### Total Estimated Logistics Cost:
-- If you stay at Nairobi Serena: $920 + $750 = **$1,670**
-- If you stay at Radisson Blu: $920 + $600 = **$1,520**
-
-Let me know if you need further assistance or specific details about your trip!
+Your total logistics cost will be **$1,670** if you choose Nairobi Serena or **$1,520** if you opt for Radisson Blu.
 ```
 
 ---
