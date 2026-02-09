@@ -1,6 +1,5 @@
 import os
 import json
-from fastapi import FastAPI
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -17,8 +16,6 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     
 )
-
-app = FastAPI()
 
 # ------------------
 # Tools (Business Logic)
@@ -114,19 +111,22 @@ prompt = (
 messages = [{"role": "user", "content": prompt}]
 
 # Tool calls
-def execute_tool(name, args):
-        if name == "get_flight_schedule":
+def execute_function(function_name, args):
+        if function_name == "get_flight_schedule":
             return get_flight_schedule(**args)
-        elif name == "get_hotel_schedule":
+        elif function_name == "get_hotel_schedule":
             return get_hotel_schedule(**args)
-        elif name == "convert_currency":
+        elif function_name == "convert_currency":
             return convert_currency(**args)
         else:
-            return {"error": "Unknown tool"}
+            return {"error": f"Unknown function: {function_name}"}
 
 # ------------------
-#  LLM Loop
+#  Conversation Loop
 # ------------------
+def run_conversation_loop():
+    global messages
+
 while True:
     response = client.chat.completions.create(
         model=LLM_MODEL_NAME,
@@ -141,18 +141,22 @@ while True:
         messages.append(message)
 
         for tool_call in message.tool_calls:
-            tool_name = tool_call.function.name
-            tool_args = json.loads(tool_call.function.arguments)
+            function_name = tool_call.function.name
+            function_args = json.loads(tool_call.function.arguments)
 
-            tool_result = execute_tool(tool_name, tool_args)
+            result = execute_function(function_name, function_args)
 
             messages.append({
                 "role": "tool",
                 "tool_call_id": tool_call.id,
-                "name": tool_name,
-                "content": json.dumps(tool_result)
+                "name": function_name,
+                "content": json.dumps(result)
             })
 
-    else:
-        print(message.content)
-        break
+        continue
+
+    print("\nFinal LLM Response:\n")
+    print(message.content)
+    break
+
+run_conversation_loop()

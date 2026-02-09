@@ -68,11 +68,9 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-Run the application using:
+Run the application using
 
-```bash
-uvicorn main:app
-```
+python main.py
 
 This will execute the tool-calling workflow and print the final LLM response directly to the terminal.
 
@@ -131,7 +129,6 @@ Converts in USD, NGN
 ## Technology Stack
 
 * **Python 3.10+**
-* **FastAPI**
 * **OpenAI SDK** (via OpenRouter)
 * **python-dotenv**
 
